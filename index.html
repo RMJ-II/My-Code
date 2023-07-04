@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title class="header">Recall Rendezvous</title>
+  
+  <style>
+    .header {
+        color: white;
+        font-family: 'Oswald', sans-serif;
+    }
+    .card {
+      width: 170px  ;
+      height: 170px;
+      background-color: rgb(0, 255, 255);
+      border: 1px solid rgb(0, 0, 0);
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 75px   ;
+      cursor: pointer;
+      margin: 7px;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap');
+    
+    #timer {
+      font-size: 18px;
+      margin-top: 10px;
+      color:white
+      
+    }
+
+    body {
+    background-color: black;
+}
+  </style>
+</head>
+<body>
+  <h1 class="header">Recall Rendezvous</h1>
+  <div id="game-board"></div>
+  <div id="timer">Time: 0 seconds</div>
+  <script>
+    // Array to store the card values
+    var cards = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+
+    // Shuffle the cards
+    cards.sort(function() {
+      return 0.5 - Math.random();
+    });
+
+
+    // Create the game board
+    var gameBoard = document.getElementById('game-board');
+    for (var i = 0; i < cards.length; i++) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = '&nbsp;';
+      card.dataset.value = cards[i];
+      card.addEventListener('click', flipCard);
+      gameBoard.appendChild(card);
+    }
+
+
+    var flippedCards = [];
+    var matchedCards = [];
+    var timerElement = document.getElementById('timer');
+    var seconds = 0;
+    var timerInterval;
+
+    let done = false
+    function flipCard() {
+      if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
+        this.classList.add('flipped');
+        this.innerHTML = this.dataset.value;
+        flippedCards.push(this);
+
+
+        if (flippedCards.length === 1 && !done) {
+          startTimer();
+          done = true
+        }
+      }
+
+
+      if (flippedCards.length === 2) {
+        setTimeout(checkMatch, 1000);
+      }
+    }
+
+
+    function checkMatch() {
+      var card1 = flippedCards[0];
+      var card2 = flippedCards[1];
+
+
+      if (card1.dataset.value === card2.dataset.value) {
+        card1.classList.add('matched');
+        card2.classList.add('matched');
+        matchedCards.push(card1, card2);
+      } else {
+        card1.classList.remove('flipped');
+        card2.classList.remove('flipped');
+        card1.innerHTML = '&nbsp;';
+        card2.innerHTML = '&nbsp;';
+      }
+
+
+      flippedCards = [];
+
+
+      if (matchedCards.length === cards.length) {
+        stopTimer();
+        alert('Congratulations! You won the game in ' + seconds + ' seconds!');
+      }
+    }
+
+
+    function startTimer() {
+      timerInterval = setInterval(function() {
+        seconds++;
+        timerElement.textContent = 'Time: ' + seconds + ' seconds';
+      }, 1000);
+    }
+
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+  </script>
+</body>
+</html>
